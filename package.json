@@ -1,0 +1,110 @@
+{
+  "name": "gigo",
+  "displayName": "GIGO - Garbage In, Gold Out",
+  "description": "Upscale lazy, typo-ridden prompts into highly technical specifications",
+  "version": "0.2.0",
+  "publisher": "gigo",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gigo.upscalePrompt",
+        "title": "GIGO: Upscale Prompt"
+      },
+      {
+        "command": "gigo.upscaleClipboard",
+        "title": "GIGO: Upscale from Clipboard"
+      },
+      {
+        "command": "gigo.restoreOriginal",
+        "title": "GIGO: Restore Original"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "gigo.upscalePrompt",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "gigo.upscaleClipboard",
+        "key": "ctrl+shift+alt+g",
+        "mac": "cmd+shift+alt+g"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "gigo.upscalePrompt",
+          "group": "1_modification",
+          "when": "editorHasSelection"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "GIGO",
+      "properties": {
+        "gigo.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for OpenAI or Anthropic (fallback when vscode.lm is unavailable)",
+          "markdownDescription": "API key for OpenAI or Anthropic. Only used when the built-in Language Model API is unavailable."
+        },
+        "gigo.apiProvider": {
+          "type": "string",
+          "enum": [
+            "openai",
+            "anthropic"
+          ],
+          "default": "openai",
+          "description": "Which API provider to use for the fallback",
+          "markdownDescription": "Which API provider to use when falling back to external APIs."
+        },
+        "gigo.model": {
+          "type": "string",
+          "default": "",
+          "description": "Model identifier (e.g., gpt-4o, claude-sonnet-4-20250514). Leave empty to use provider default.",
+          "markdownDescription": "Model identifier for the fallback API. Leave empty to use provider defaults (`gpt-4o` for OpenAI, `claude-sonnet-4-20250514` for Anthropic)."
+        },
+        "gigo.systemPrompt": {
+          "type": "string",
+          "default": "",
+          "description": "Custom system prompt for upscaling. Leave empty to use the built-in default.",
+          "markdownDescription": "Custom system prompt for the LLM. Leave empty to use the built-in default. The user's input will be appended after this prompt.",
+          "editPresentation": "multilineText"
+        },
+        "gigo.historySize": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Number of original prompts to keep in history for restoration."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/vsce": "^3.7.1",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0"
+  }
+}
