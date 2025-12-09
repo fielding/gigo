@@ -19,7 +19,7 @@ A VS Code/Cursor extension that transforms lazy, typo-ridden prompts into highly
 |---------|------------|-------------|
 | `GIGO: Upscale Prompt` | `Cmd+Shift+G` | Upscale selected text or show input box |
 | `GIGO: Upscale from Clipboard` | `Cmd+Shift+Alt+G` | Read clipboard, upscale, write back |
-| `GIGO: Restore Original` | - | Browse history and restore an original prompt |
+| `GIGO: Restore Original` | - | Browse history and restore an original prompt (replaces selection) |
 
 ### Workflow Examples
 
@@ -38,6 +38,12 @@ A VS Code/Cursor extension that transforms lazy, typo-ridden prompts into highly
 1. Press `Cmd+Shift+G` with no selection
 2. Type your lazy prompt in the input box
 3. Result is copied to clipboard
+
+**Restore workflow:**
+1. Upscale some text and realize it's not what you wanted
+2. Select the upscaled text (or position cursor where you want to insert)
+3. Run `GIGO: Restore Original` from Command Palette
+4. Pick from history - the original replaces your selection (or inserts at cursor)
 
 ### Context Menu
 Right-click on selected text and choose "GIGO: Upscale Prompt"
