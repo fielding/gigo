@@ -3,7 +3,7 @@
 > **The "Prompt Launderer" for Cursor & VS Code.**
 > *Stop polluting your context window with lazy prompts.*
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Status](https://img.shields.io/badge/status-working-prototype-green.svg) ![Simulated IQ](https://img.shields.io/badge/Simulated%20IQ-200+-purple)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Status](https://img.shields.io/badge/status-working+prototype-green.svg) ![Simulated IQ](https://img.shields.io/badge/Simulated%20IQ-200+-purple)
 
 ## The Deep Lore: Why This Works
 
