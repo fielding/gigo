@@ -1,6 +1,6 @@
 # GIGO - Garbage In, Gold Out
 
-A VS Code/Cursor extension that transforms lazy, typo-ridden prompts into highly technical specifications using LLM.
+A VS Code/Cursor extension that transforms lazy, typo-ridden prompts into formal inquiries using an LLM.
 
 ## Features
 
