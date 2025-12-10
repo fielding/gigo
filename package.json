@@ -2,7 +2,7 @@
   "name": "gigo",
   "displayName": "GIGO - Garbage In, Gold Out",
   "description": "Upscale lazy, typo-ridden prompts into highly technical specifications",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "gigo",
   "engines": {
     "vscode": "^1.90.0"
@@ -19,10 +19,6 @@
         "title": "GIGO: Upscale Prompt"
       },
       {
-        "command": "gigo.upscaleClipboard",
-        "title": "GIGO: Upscale from Clipboard"
-      },
-      {
         "command": "gigo.restoreOriginal",
         "title": "GIGO: Restore Original"
       }
@@ -31,13 +27,7 @@
       {
         "command": "gigo.upscalePrompt",
         "key": "ctrl+shift+g",
-        "mac": "cmd+shift+g",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "gigo.upscaleClipboard",
-        "key": "ctrl+shift+alt+g",
-        "mac": "cmd+shift+alt+g"
+        "mac": "cmd+shift+g"
       }
     ],
     "menus": {

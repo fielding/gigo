@@ -10,7 +10,6 @@ export function activate(context: vscode.ExtensionContext) {
   // Register all commands
   context.subscriptions.push(
     vscode.commands.registerCommand('gigo.upscalePrompt', executeUpscale),
-    vscode.commands.registerCommand('gigo.upscaleClipboard', executeUpscaleClipboard),
     vscode.commands.registerCommand('gigo.restoreOriginal', executeRestoreOriginal)
   );
 }
@@ -23,24 +22,15 @@ export function deactivate() {
 // History Management
 // ============================================================================
 
-/**
- * Gets the history size from settings.
- */
 function getHistorySize(): number {
   const config = vscode.workspace.getConfiguration(CONFIG.SECTION);
   return config.get<number>(CONFIG.HISTORY_SIZE) ?? 5;
 }
 
-/**
- * Retrieves the history from globalState.
- */
 function getHistory(): HistoryEntry[] {
   return extensionContext.globalState.get<HistoryEntry[]>(STORAGE_KEYS.HISTORY, []);
 }
 
-/**
- * Adds an entry to the history, trimming to max size.
- */
 async function addToHistory(original: string, upscaled: string): Promise<void> {
   const history = getHistory();
   const maxSize = getHistorySize();
@@ -51,7 +41,6 @@ async function addToHistory(original: string, upscaled: string): Promise<void> {
     timestamp: Date.now(),
   };
 
-  // Add to front, trim to max size
   history.unshift(entry);
   if (history.length > maxSize) {
     history.length = maxSize;
@@ -60,9 +49,6 @@ async function addToHistory(original: string, upscaled: string): Promise<void> {
   await extensionContext.globalState.update(STORAGE_KEYS.HISTORY, history);
 }
 
-/**
- * Formats a timestamp for display.
- */
 function formatTimestamp(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleString(undefined, {
@@ -73,9 +59,6 @@ function formatTimestamp(timestamp: number): string {
   });
 }
 
-/**
- * Creates a preview string (truncated if needed).
- */
 function preview(text: string, maxLength = 50): string {
   const oneLine = text.replace(/\s+/g, ' ').trim();
   if (oneLine.length <= maxLength) {
@@ -85,7 +68,7 @@ function preview(text: string, maxLength = 50): string {
 }
 
 // ============================================================================
-// Command: Upscale Prompt (selection or input box)
+// Command: Smart Upscale (selection -> clipboard -> input box)
 // ============================================================================
 
 async function executeUpscale(): Promise<void> {
@@ -93,43 +76,32 @@ async function executeUpscale(): Promise<void> {
   const selection = editor?.selection;
   const selectedText = editor?.document.getText(selection);
 
-  let inputText: string;
-  let hasSelection = false;
-
+  // Priority 1: Selection
   if (selectedText && selectedText.trim().length > 0) {
-    inputText = selectedText;
-    hasSelection = true;
-  } else {
-    const userInput = await vscode.window.showInputBox({
-      title: 'GIGO: Upscale Prompt',
-      prompt: 'Enter your lazy prompt to upscale',
-      placeHolder: 'e.g., "add auth to the api"',
-      ignoreFocusOut: true,
-    });
-
-    if (!userInput || userInput.trim().length === 0) {
-      return;
-    }
-
-    inputText = userInput;
-  }
-
-  await performUpscale(inputText, hasSelection ? { editor: editor!, selection: selection! } : undefined);
-}
-
-// ============================================================================
-// Command: Upscale from Clipboard
-// ============================================================================
-
-async function executeUpscaleClipboard(): Promise<void> {
-  const clipboardText = await vscode.env.clipboard.readText();
-
-  if (!clipboardText || clipboardText.trim().length === 0) {
-    vscode.window.showWarningMessage('GIGO: Clipboard is empty');
+    await performUpscale(selectedText, { editor: editor!, selection: selection! });
     return;
   }
 
-  await performUpscale(clipboardText, undefined, true);
+  // Priority 2: Clipboard
+  const clipboardText = await vscode.env.clipboard.readText();
+  if (clipboardText && clipboardText.trim().length > 0) {
+    await performUpscale(clipboardText, undefined, true);
+    return;
+  }
+
+  // Priority 3: Input box
+  const userInput = await vscode.window.showInputBox({
+    title: 'GIGO: Upscale Prompt',
+    prompt: 'Enter your lazy prompt to upscale',
+    placeHolder: 'e.g., "add auth to the api"',
+    ignoreFocusOut: true,
+  });
+
+  if (!userInput || userInput.trim().length === 0) {
+    return;
+  }
+
+  await performUpscale(userInput, undefined, false);
 }
 
 // ============================================================================
@@ -169,23 +141,17 @@ async function executeRestoreOriginal(): Promise<void> {
   const selection = editor?.selection;
 
   if (editor && selection && !selection.isEmpty) {
-    // Replace selection with original
     await editor.edit((editBuilder) => {
       editBuilder.replace(selection, entry.original);
     });
-
     vscode.window.showInformationMessage('GIGO: Original restored');
   } else if (editor && selection) {
-    // No selection but editor is open - insert at cursor
     await editor.edit((editBuilder) => {
       editBuilder.insert(selection.active, entry.original);
     });
-
     vscode.window.showInformationMessage('GIGO: Original inserted at cursor');
   } else {
-    // No editor - copy to clipboard as fallback
     await vscode.env.clipboard.writeText(entry.original);
-
     const action = await vscode.window.showInformationMessage(
       'GIGO: Original copied to clipboard (no editor open)',
       'View Both'
@@ -266,12 +232,12 @@ async function performUpscale(
         await vscode.env.clipboard.writeText(upscaledText);
 
         const action = await vscode.window.showInformationMessage(
-          `GIGO: Upscaled prompt written to clipboard (via ${result.source})`,
-          'View Original',
+          `GIGO: Upscaled clipboard (via ${result.source})`,
+          'Restore Original',
           'View Both'
         );
 
-        if (action === 'View Original') {
+        if (action === 'Restore Original') {
           await vscode.env.clipboard.writeText(inputText);
           vscode.window.showInformationMessage('GIGO: Original restored to clipboard');
         } else if (action === 'View Both') {

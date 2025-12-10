@@ -3,7 +3,7 @@
 > **The "Prompt Launderer" for Cursor & VS Code.**
 > *Stop polluting your context window with lazy prompts.*
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Status](https://img.shields.io/badge/status-working+prototype-green.svg) ![Simulated IQ](https://img.shields.io/badge/Simulated%20IQ-200+-purple)
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Status](https://img.shields.io/badge/status-stable-green.svg) ![Simulated IQ](https://img.shields.io/badge/Simulated%20IQ-200+-purple)
 
 ## The Deep Lore: Why This Works
 
@@ -59,9 +59,8 @@ It intercepts your input and routes it through a "Middleware" layer (using the `
 
 ## Features
 
-- **Upscale any prompt**: Select sloppy text and transform it into a detailed technical spec
-- **Multiple input methods**: Use selected text, input box, or clipboard
-- **Clipboard workflow**: Copy lazy prompt, upscale in-place, paste the gold
+- **One hotkey does it all**: `Cmd+Shift+G` intelligently handles selection, clipboard, or manual input
+- **Clipboard workflow**: Copy lazy prompt, hit hotkey, paste the gold - perfect for Cursor chat
 - **Undo/History**: Restore original prompts if the upscale isn't what you wanted
 - **Custom system prompt**: Tweak the upscaling behavior to your preferences
 - **Smart LLM fallback**: Automatically uses `vscode.lm` API when available, falls back to OpenAI/Anthropic
@@ -84,9 +83,9 @@ Press `F5` in VS Code/Cursor to launch the Extension Development Host.
 ### From VSIX
 
 ```bash
-cursor --install-extension gigo-0.2.0.vsix
+cursor --install-extension gigo-0.3.0.vsix
 # or
-code --install-extension gigo-0.2.0.vsix
+code --install-extension gigo-0.3.0.vsix
 ```
 
 Or in VS Code/Cursor: `Cmd+Shift+P` -> "Extensions: Install from VSIX..."
@@ -95,37 +94,30 @@ Or in VS Code/Cursor: `Cmd+Shift+P` -> "Extensions: Install from VSIX..."
 
 ## Usage
 
+### One Hotkey: `Cmd+Shift+G`
+
+The command intelligently picks the right workflow:
+
+| Condition | Behavior |
+|-----------|----------|
+| Text is selected | Upscales selection, replaces in-place |
+| No selection, clipboard has text | Upscales clipboard, writes back to clipboard |
+| No selection, clipboard empty | Shows input box, copies result to clipboard |
+
 ### Commands
 
 | Command | Keybinding | Description |
 |---------|------------|-------------|
-| `GIGO: Upscale Prompt` | `Cmd+Shift+G` | Upscale selected text or show input box |
-| `GIGO: Upscale from Clipboard` | `Cmd+Shift+Alt+G` | Read clipboard, upscale, write back |
-| `GIGO: Restore Original` | - | Browse history and restore an original prompt (replaces selection) |
+| `GIGO: Upscale Prompt` | `Cmd+Shift+G` | Smart upscale (selection -> clipboard -> input) |
+| `GIGO: Restore Original` | - | Browse history and restore an original prompt |
 
-### Workflow Examples
+### Typical Workflow (Cursor Chat)
 
-**Selection workflow:**
-1. Select sloppy text in the editor
-2. Press `Cmd+Shift+G`
-3. Text is replaced with the upscaled version
-
-**Clipboard workflow (best for Cursor chat):**
-1. Type your lazy prompt in the chat box
+1. Type your lazy prompt in the Cursor chat box
 2. Select all and copy (`Cmd+A`, `Cmd+C`)
-3. Press `Cmd+Shift+Alt+G`
+3. Press `Cmd+Shift+G`
 4. Paste (`Cmd+V`) - your upscaled prompt is ready
-
-**Input box workflow:**
-1. Press `Cmd+Shift+G` with no selection
-2. Type your lazy prompt in the input box
-3. Result is copied to clipboard
-
-**Restore workflow:**
-1. Upscale some text and realize it's not what you wanted
-2. Select the upscaled text (or position cursor where you want to insert)
-3. Run `GIGO: Restore Original` from Command Palette
-4. Pick from history - the original replaces your selection (or inserts at cursor)
+5. Send it
 
 ### Context Menu
 
